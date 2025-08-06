@@ -1,89 +1,69 @@
-const SIMILAR_PICTURE_COUNT = 25;
-const LIKES_COUNT = {
-  MIN: 15, MAX: 200,
+const pictureData = {
+  COUNT: 25,
+  LIKES: {MIN: 15, MAX: 200},
+  COMMENTS: {MIN: 0, MAX: 30},
+  AVATAR_COUNT: 6,
+  MESSAGES: [
+    'Всё отлично!',
+    'В целом всё неплохо. Но не всё.',
+    'Когда вы делаете фотографию, хорошо бы убирать палец из кадра.',
+    'Моя бабушка случайно чихнула и сделала лучше.',
+    'Я уронил фотоаппарат на кота и получилось лучше.',
+    'Лица у людей перекошены. Как можно было поймать такой момент?!',
+  ],
+  NAMES: ['Иван', 'Николай', 'Петр', 'Рома', 'Вася', 'Маша', 'Вика', 'Поля', 'Даша'],
+  DESCRIPTIONS: [
+    'Закат над горами — настоящее волшебство.',
+    'Уютный вечер на берегу моря.',
+    'Город, просыпающийся вместе с солнцем.',
+    'Следы на песке и шум прибоя.',
+    'Вид с вершины, который стоит усилий.',
+    'Рассвет, который хочется запомнить.',
+    'Цветочный сад в самом расцвете.',
+    'Моменты у костра в тишине.',
+    'Панорама большого города сверху.',
+    'Зимняя сказка в горах.',
+  ],
 };
-const COMMENTS_COUNT = {
-  MIN: 0, MAX: 30,
-};
-const MESSAGES = ['Всё отлично!', 'В целом всё неплохо. Но не всё.', 'Когда вы делаете фотографию, хорошо бы убирать палец из кадра. В конце концов это просто непрофессионально.', 'Моя бабушка случайно чихнула с фотоаппаратом в руках и у неё получилась фотография лучше.', 'Я поскользнулся на банановой кожуре и уронил фотоаппарат на кота и у меня получилась фотография лучше.', 'Лица у людей на фотке перекошены, как будто их избивают. Как можно было поймать такой неудачный момент?!',];
-const NAMES = [
-  'Иван',
-  'Николай',
-  'Петр',
-  'Рома',
-  'Вася',
-  'Маша',
-  'Вика',
-  'Поля',
-  'Даша'
-];
-const DESCRIPTIONS = [
-  'Закат над горами — настоящее волшебство.',
-  'Дорога, уводящая в никуда.',
-  'Уютный вечер на берегу моря.',
-  'Город, просыпающийся вместе с солнцем.',
-  'Прогулка по осеннему лесу.',
-  'Небо в огне — закат мечты.',
-  'Тишина перед бурей.',
-  'Следы на песке и шум прибоя.',
-  'Заброшенное здание с историей.',
-  'Вид с вершины, который стоит усилий.',
-  'Мост в облаках — почти как сказка.',
-  'Пейзаж, от которого захватывает дух.',
-  'Городская суета в объективе.',
-  'Рассвет, который хочется запомнить.',
-  'Поле, уходящее за горизонт.',
-  'Старый маяк на фоне заката.',
-  'Цветочный сад в самом расцвете.',
-  'Краски ночного города.',
-  'Моменты у костра в тишине.',
-  'Лесной ручей и пение птиц.',
-  'Переулок, полный тайных историй.',
-  'Панорама большого города сверху.',
-  'Идеальный пикник на лужайке.',
-  'Зимняя сказка в горах.',
-  'Старинная улица в закатном свете.'
-];
 
-const getRandomInteger = (a, b) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-  const result = Math.random() * (upper - lower + 1) + lower;
-  return Math.floor(result);
-};
+const getRandomInteger = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 const getRandomArrayElement = (elements) => elements[getRandomInteger(0, elements.length - 1)];
 
 const createMessage = () => {
-  const selected = new Set();
-  while (selected.size < getRandomInteger(1, 2)) {
-    selected.add(getRandomArrayElement(MESSAGES));
+  const count = getRandomInteger(1, 2);
+  const uniqueMessages = new Set();
+  while (uniqueMessages.size < count) {
+    uniqueMessages.add(getRandomArrayElement(pictureData.MESSAGES));
   }
-  return Array.from(selected).join(' ');
+  return Array.from(uniqueMessages).join(' ');
 };
 
 const createCommentGenerator = () => {
   let id = 1;
   return () => ({
     id: id++,
-    avatar: `img/avatar-${getRandomInteger(1, 6)}.svg`,
+    avatar: `img/avatar-${getRandomInteger(1, pictureData.AVATAR_COUNT)}.svg`,
     message: createMessage(),
-    name: getRandomArrayElement(NAMES),
+    name: getRandomArrayElement(pictureData.NAMES),
   });
 };
 
 const generateComment = createCommentGenerator();
 
-const generateComments = () => Array.from({length: getRandomInteger(COMMENTS_COUNT.MIN, COMMENTS_COUNT.MAX)}, generateComment);
+const generateComments = () =>
+  Array.from({length: getRandomInteger(pictureData.COMMENTS.MIN, pictureData.COMMENTS.MAX)}, generateComment);
 
 const createPicture = (id) => ({
   id: id + 1,
   url: `photos/${id + 1}.jpg`,
-  description: getRandomArrayElement(DESCRIPTIONS),
-  likes: getRandomInteger(LIKES_COUNT.MIN, LIKES_COUNT.MAX),
+  description: getRandomArrayElement(pictureData.DESCRIPTIONS),
+  likes: getRandomInteger(pictureData.LIKES.MIN, pictureData.LIKES.MAX),
   comments: generateComments(),
 });
 
-const generateSimilarPictures = () => Array.from({length: SIMILAR_PICTURE_COUNT}, (_, id) => createPicture(id));
+const generateSimilarPictures = () =>
+  Array.from({length: pictureData.COUNT}, (_, id) => createPicture(id));
 
 console.log(generateSimilarPictures());
+
