@@ -1,7 +1,4 @@
-import {renderPictures} from './pictures.js';
-import {generateSimilarPictures} from './data.js';
-import './form.js';
+import {renderPictures} from './picture.js';
+import {getPictures} from './data.js';
 
-const picturesContainer = document.querySelector('.pictures');
-renderPictures(generateSimilarPictures(), picturesContainer);
-
+renderPictures(getPictures());
